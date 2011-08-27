@@ -37,6 +37,7 @@ bind = do ->
 
 noInit = noInit: true
 @Proto = Proto =
+  usesProto: true
   bind: (fn) -> bind fn, this
   initialize: ->
   
