@@ -1,20 +1,30 @@
-global = this
+try
+  g = global
+  throw "" if not g?
+catch e
+  g = window
 
 isFn = (fn) -> typeof fn is "function"
 
+createClass = (p) ->
+  O = ->
+  O:: = p
+  new O
+  
 create = do ->
   if Object.create
     (p) -> Object.create p
   else
-    (p) ->
-      O = ->
-      O:: = p
-      new O
+    createClass
       
+DONE = finished_initializing: true
 initializeAll = (p, args...) ->
-  t = if this == global then p else this
+  t = if this == g then p else this
   if p.hasOwnProperty "initialize"
+    [tmp, t.DONE] = [t.DONE, DONE]
     args = p.initialize.apply(t, args) || args
+    if tmp? then t.DONE = tmp else delete t.DONE
+    return if args == DONE
   if p.parent
     try
       args.unshift p.parent
@@ -36,51 +46,52 @@ bind = do ->
       bound
 
 noInit = noInit: true
-@Proto = Proto =
-  usesProto: true
+Proto =
+  dontProvide: ["template"]
   bind: (fn) -> bind fn, this
   initialize: ->
   
   create: (init) ->
     p = create this
     p.parent = this
-    if init isnt noInit && isFn p.initialize
+    p.self = p
+    (delete p[item] if p.hasOwnProperty item) for item in @dontProvide or []
+    if init isnt noInit and isFn p.initialize
       initializeAll p, arguments...
     p
     
-  template: (scope, name, parent) ->
-    # Sort out arguments
-    if arguments.length < 3
-      [scope, name, parent] = [null, scope, name]
-    
-    if this isnt Proto
-      throw { 
-        name: "IncorrectScopeError"
-        message: "Scope for Proto.template must be set to Proto"
-      }
-    if not name
-      throw {
-        name: "NoNameError"
-        message: "Proto.template must be called with a name in the first or second argument."
-      }
-    
-    scope or= global
-    parent or= this
+  template: (parent=Proto) ->
     if not Proto.uses.call parent, Proto
-      Proto.include.call parent, Proto
-    
-    scope[name] = p = parent.create noInit
+      parent = Proto.create.call parent
+      Proto.include.call parent, Proto, false
+    parent.create noInit
     
   include: (item, configs...) ->
     if isFn item
       item.apply this, configs
     else
-      (this[name] = value if not this.hasOwnProperty name) for own name, value of item
+      safe = arguments[1]
+      safe = if not safe? then true else safe
+      dontProvide = item.dontProvide or []
+      for own name, value of item
+        unless name in dontProvide
+          this[name] = value if !safe or not this.hasOwnProperty name
+    this
     
   uses: (obj) ->
-    if @parent is obj
-      true
-    else if @parent
-      @parent.uses obj
+    if this is obj || this.self is obj || @parent is obj || @parent?.self is obj
+      ret = true
+    else if @parent and isFn @parent.uses
+      ret = @parent.uses obj
     else
-      false
+      ret = false
+    
+    ret
+
+# Do some initializing for Proto
+Proto.self = Proto
+
+try
+  module.exports = Proto
+catch e
+  @Proto = Proto

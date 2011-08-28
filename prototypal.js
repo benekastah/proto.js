@@ -1,9 +1,27 @@
 (function() {
-  var Proto, bind, create, global, initializeAll, isFn, noInit;
-  var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
-  global = this;
+  var DONE, Proto, bind, create, createClass, g, initializeAll, isFn, noInit;
+  var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty, __indexOf = Array.prototype.indexOf || function(item) {
+    for (var i = 0, l = this.length; i < l; i++) {
+      if (this[i] === item) return i;
+    }
+    return -1;
+  };
+  try {
+    g = global;
+    if (!(g != null)) {
+      throw "";
+    }
+  } catch (e) {
+    g = window;
+  }
   isFn = function(fn) {
     return typeof fn === "function";
+  };
+  createClass = function(p) {
+    var O;
+    O = function() {};
+    O.prototype = p;
+    return new O;
   };
   create = (function() {
     if (Object.create) {
@@ -11,20 +29,27 @@
         return Object.create(p);
       };
     } else {
-      return function(p) {
-        var O;
-        O = function() {};
-        O.prototype = p;
-        return new O;
-      };
+      return createClass;
     }
   })();
+  DONE = {
+    finished_initializing: true
+  };
   initializeAll = function() {
-    var args, p, t;
+    var args, p, t, tmp, _ref;
     p = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-    t = this === global ? p : this;
+    t = this === g ? p : this;
     if (p.hasOwnProperty("initialize")) {
+      _ref = [t.DONE, DONE], tmp = _ref[0], t.DONE = _ref[1];
       args = p.initialize.apply(t, args) || args;
+      if (tmp != null) {
+        t.DONE = tmp;
+      } else {
+        delete t.DONE;
+      }
+      if (args === DONE) {
+        return;
+      }
     }
     if (p.parent) {
       try {
@@ -62,67 +87,76 @@
   noInit = {
     noInit: true
   };
-  this.Proto = Proto = {
+  Proto = {
+    dontProvide: ["template"],
     bind: function(fn) {
       return bind(fn, this);
     },
     initialize: function() {},
     create: function(init) {
-      var p;
+      var item, p, _i, _len, _ref;
       p = create(this);
       p.parent = this;
+      p.self = p;
+      _ref = this.dontProvide || [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        item = _ref[_i];
+        if (p.hasOwnProperty(item)) {
+          delete p[item];
+        }
+      }
       if (init !== noInit && isFn(p.initialize)) {
         initializeAll.apply(null, [p].concat(__slice.call(arguments)));
       }
       return p;
     },
-    template: function(scope, name, parent) {
-      var p, _ref;
-      if (arguments.length < 3) {
-        _ref = [null, scope, name], scope = _ref[0], name = _ref[1], parent = _ref[2];
+    template: function(parent) {
+      if (parent == null) {
+        parent = Proto;
       }
-      if (this !== Proto) {
-        throw {
-          name: "IncorrectScopeError",
-          message: "Scope for Proto.template must be set to Proto"
-        };
-      }
-      if (!name) {
-        throw {
-          name: "NoNameError",
-          message: "Proto.template must be called with a name in the first or second argument."
-        };
-      }
-      scope || (scope = global);
-      parent || (parent = this);
       if (!Proto.uses.call(parent, Proto)) {
-        Proto.include.call(parent, Proto);
+        parent = Proto.create.call(parent);
+        Proto.include.call(parent, Proto, false);
       }
-      return scope[name] = p = parent.create(noInit);
+      return parent.create(noInit);
     },
     include: function() {
-      var configs, item, name, value, _results;
+      var configs, dontProvide, item, name, safe, value;
       item = arguments[0], configs = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       if (isFn(item)) {
-        return item.apply(this, configs);
+        item.apply(this, configs);
       } else {
-        _results = [];
+        safe = arguments[1];
+        safe = !(safe != null) ? true : safe;
+        dontProvide = item.dontProvide || [];
         for (name in item) {
           if (!__hasProp.call(item, name)) continue;
           value = item[name];
-          _results.push((!this.hasOwnProperty(name) ? this[name] = value : void 0));
+          if (__indexOf.call(dontProvide, name) < 0) {
+            if (!safe || !this.hasOwnProperty(name)) {
+              this[name] = value;
+            }
+          }
         }
-        return _results;
       }
+      return this;
     },
     uses: function(obj) {
-      if (this.parent === obj) {
-        return true;
-      } else if (this.parent) {
-        return this.parent.uses(obj);
+      var ret, _ref;
+      if (this === obj || this.self === obj || this.parent === obj || ((_ref = this.parent) != null ? _ref.self : void 0) === obj) {
+        ret = true;
+      } else if (this.parent && isFn(this.parent.uses)) {
+        ret = this.parent.uses(obj);
       } else {
-        return false;
+        ret = false;
       }
+      return ret;
     }
   };
+  Proto.self = Proto;
+  try {
+    module.exports = Proto;
+  } catch (e) {
+    this.Proto = Proto;
+  }
 }).call(this);
