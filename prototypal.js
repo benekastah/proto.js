@@ -51,11 +51,11 @@
         return;
       }
     }
-    if (p.parent) {
+    if (p.base) {
       try {
-        args.unshift(p.parent);
+        args.unshift(p.base);
       } catch (e) {
-        args = [p.parent, args];
+        args = [p.base, args];
       }
       return initializeAll.apply(t, args);
     }
@@ -96,7 +96,7 @@
     create: function(init) {
       var item, p, _i, _len, _ref;
       p = create(this);
-      p.parent = this;
+      p.base = this;
       p.self = p;
       _ref = this.dontProvide || [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -110,15 +110,15 @@
       }
       return p;
     },
-    template: function(parent) {
-      if (parent == null) {
-        parent = Proto;
+    template: function(base) {
+      if (base == null) {
+        base = Proto;
       }
-      if (!Proto.uses.call(parent, Proto)) {
-        parent = Proto.create.call(parent);
-        Proto.include.call(parent, Proto, false);
+      if (!Proto.uses.call(base, Proto)) {
+        base = Proto.create.call(base);
+        Proto.include.call(base, Proto, false);
       }
-      return parent.create(noInit);
+      return base.create(noInit);
     },
     include: function() {
       var configs, dontProvide, item, name, safe, value;
@@ -143,10 +143,10 @@
     },
     uses: function(obj) {
       var ret, _ref;
-      if (this === obj || this.self === obj || this.parent === obj || ((_ref = this.parent) != null ? _ref.self : void 0) === obj) {
+      if (this === obj || this.self === obj || this.base === obj || ((_ref = this.base) != null ? _ref.self : void 0) === obj) {
         ret = true;
-      } else if (this.parent && isFn(this.parent.uses)) {
-        ret = this.parent.uses(obj);
+      } else if (this.base && isFn(this.base.uses)) {
+        ret = this.base.uses(obj);
       } else {
         ret = false;
       }

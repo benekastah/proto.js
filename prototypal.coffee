@@ -25,11 +25,11 @@ initializeAll = (p, args...) ->
     args = p.initialize.apply(t, args) || args
     if tmp? then t.DONE = tmp else delete t.DONE
     return if args == DONE
-  if p.parent
+  if p.base
     try
-      args.unshift p.parent
+      args.unshift p.base
     catch e
-      args = [p.parent, args]
+      args = [p.base, args]
     initializeAll.apply t, args
       
 bind = do ->
@@ -53,18 +53,18 @@ Proto =
   
   create: (init) ->
     p = create this
-    p.parent = this
+    p.base = this
     p.self = p
     (delete p[item] if p.hasOwnProperty item) for item in @dontProvide or []
     if init isnt noInit and isFn p.initialize
       initializeAll p, arguments...
     p
     
-  template: (parent=Proto) ->
-    if not Proto.uses.call parent, Proto
-      parent = Proto.create.call parent
-      Proto.include.call parent, Proto, false
-    parent.create noInit
+  template: (base=Proto) ->
+    if not Proto.uses.call base, Proto
+      base = Proto.create.call base
+      Proto.include.call base, Proto, false
+    base.create noInit
     
   include: (item, configs...) ->
     if isFn item
@@ -79,10 +79,10 @@ Proto =
     this
     
   uses: (obj) ->
-    if this is obj || this.self is obj || @parent is obj || @parent?.self is obj
+    if this is obj || this.self is obj || @base is obj || @base?.self is obj
       ret = true
-    else if @parent and isFn @parent.uses
-      ret = @parent.uses obj
+    else if @base and isFn @base.uses
+      ret = @base.uses obj
     else
       ret = false
     
