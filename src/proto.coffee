@@ -1,3 +1,5 @@
+# _[Fork me on Github!](https://github.com/benekastah/proto.js)_
+
 # **`proto.coffee`** provides a small and simple, yet complete and powerful, toolkit for prototypal
 # inheritance in javascript. It was intended to minimize the number of steps it takes to build a successful
 # and organized object structure for your application. It is every bit as powerful as the typical class-based
