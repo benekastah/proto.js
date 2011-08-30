@@ -3,6 +3,8 @@
 A fully prototypal inheritance system. This means no more calling pseudo-class functions with `new` (at least
 if you don't want to). It's wonderfully simple and oh-so-javascripty!
 
+_When you want to start playing with it, all you need is `src/proto.js`._
+
 ##Have a gander!
 
 Make some template objects
