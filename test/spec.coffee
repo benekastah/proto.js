@@ -50,9 +50,9 @@ describe "Proto", ->
     
   it "can list its methods", ->
     m = Proto.create().include(a: -> 'a').methods()
-    expect(if "bind" in m then true).toEqual true
-    expect(if 'a' in m then true).toEqual true
-    expect(if 'bogus' in m then true).toEqual undefined
+    expect(if ("bind" in m) then true).toEqual true
+    expect(if ('a' in m) then true).toEqual true
+    expect(if ('bogus' in m) then true).toEqual undefined
     
   it "can determine what objects it uses, even if they were mixed in", ->
     expect(ex.SRange.uses Proto).toEqual true

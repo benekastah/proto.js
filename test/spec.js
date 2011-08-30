@@ -74,9 +74,9 @@
           return 'a';
         }
       }).methods();
-      expect(__indexOf.call(m, "bind") >= 0 ? true : void 0).toEqual(true);
-      expect(__indexOf.call(m, 'a') >= 0 ? true : void 0).toEqual(true);
-      return expect(__indexOf.call(m, 'bogus') >= 0 ? true : void 0).toEqual(void 0);
+      expect((__indexOf.call(m, "bind") >= 0) ? true : void 0).toEqual(true);
+      expect((__indexOf.call(m, 'a') >= 0) ? true : void 0).toEqual(true);
+      return expect((__indexOf.call(m, 'bogus') >= 0) ? true : void 0).toEqual(void 0);
     });
     return it("can determine what objects it uses, even if they were mixed in", function() {
       expect(ex.SRange.uses(Proto)).toEqual(true);
