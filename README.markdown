@@ -1,4 +1,4 @@
-#proto.js
+#[proto.js](http://benekastah.github.com/proto.js/)
 
 A fully prototypal inheritance system. This means no more calling pseudo-class functions with `new` (at least
 if you don't want to). It's wonderfully simple and oh-so-javascripty!
