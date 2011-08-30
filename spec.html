@@ -1,0 +1,61 @@
+<!DOCTYPE html>  <html> <head>   <title>spec.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="examples.html">                 examples.coffee               </a>                                           <a class="source" href="spec.html">                 spec.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               spec.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="nv">Proto = </span><span class="nx">require</span> <span class="s2">&quot;../src/proto&quot;</span>
+<span class="nv">ex = </span><span class="nx">require</span> <span class="s2">&quot;./examples&quot;</span>
+
+<span class="nx">describe</span> <span class="s2">&quot;Proto&quot;</span><span class="p">,</span> <span class="o">-&gt;</span>
+  <span class="nx">it</span> <span class="s2">&quot;can create a new object from any other object&quot;</span><span class="p">,</span> <span class="o">-&gt;</span>
+    <span class="nv">p = </span><span class="nx">Proto</span><span class="p">.</span><span class="nx">create</span><span class="p">()</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">create</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">Proto</span><span class="p">.</span><span class="nx">create</span><span class="p">)</span>
+    
+  <span class="nx">it</span> <span class="s2">&quot;can create objects that initialize when created&quot;</span><span class="p">,</span> <span class="o">-&gt;</span>
+    <span class="nv">arr = </span><span class="nx">ex</span><span class="p">.</span><span class="nx">SArray</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">arr</span><span class="p">.</span><span class="nx">last</span><span class="p">()).</span><span class="nx">toEqual</span> <span class="mi">5</span>
+    
+  <span class="nx">it</span> <span class="s2">&quot;can create object templates that don&#39;t initialize automatically&quot;</span><span class="p">,</span> <span class="o">-&gt;</span>
+    <span class="nv">T = </span><span class="nx">Proto</span><span class="p">.</span><span class="nx">template</span><span class="p">().</span><span class="nx">include</span>
+      <span class="nv">initialize: </span><span class="o">-&gt;</span>
+        <span class="vi">@AWESOME = </span><span class="s2">&quot;AWESOME!&quot;</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">T</span><span class="p">.</span><span class="nx">AWESOME</span><span class="p">).</span><span class="nx">toEqual</span> <span class="kc">undefined</span>
+    <span class="nv">t = </span><span class="nx">T</span><span class="p">.</span><span class="nx">create</span><span class="p">()</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">AWESOME</span><span class="p">).</span><span class="nx">toEqual</span> <span class="s2">&quot;AWESOME!&quot;</span>
+    
+  <span class="nx">it</span> <span class="s2">&quot;can mixin items to objects through the use of `include`&quot;</span><span class="p">,</span> <span class="o">-&gt;</span>
+    <span class="nv">A = </span><span class="nx">Proto</span><span class="p">.</span><span class="nx">template</span><span class="p">()</span>
+    <span class="nx">A</span><span class="p">.</span><span class="nx">include</span>
+      <span class="nv">a: </span><span class="s1">&#39;a&#39;</span>
+    <span class="nx">A</span><span class="p">.</span><span class="nx">include</span> <span class="o">-&gt;</span>
+      <span class="vi">@b = </span><span class="s1">&#39;b&#39;</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">A</span><span class="p">.</span><span class="nx">a</span><span class="p">).</span><span class="nx">toEqual</span> <span class="s1">&#39;a&#39;</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">A</span><span class="p">.</span><span class="nx">b</span><span class="p">).</span><span class="nx">toEqual</span> <span class="s1">&#39;b&#39;</span>
+    
+  <span class="nx">it</span> <span class="s2">&quot;can define properties not to propogate to its children&quot;</span><span class="p">,</span> <span class="o">-&gt;</span>
+    <span class="nv">A = </span><span class="nx">Proto</span><span class="p">.</span><span class="nx">template</span><span class="p">().</span><span class="nx">include</span> <span class="o">-&gt;</span>
+      <span class="nx">@dontProvide</span><span class="p">.</span><span class="nx">push</span> <span class="s2">&quot;thing&quot;</span>
+      <span class="vi">@thing = </span><span class="s2">&quot;thing!&quot;</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">A</span><span class="p">.</span><span class="nx">thing</span><span class="p">).</span><span class="nx">toEqual</span> <span class="s2">&quot;thing!&quot;</span>
+    <span class="nv">a = </span><span class="nx">A</span><span class="p">.</span><span class="nx">create</span><span class="p">()</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">thing</span><span class="p">).</span><span class="nx">toEqual</span> <span class="kc">undefined</span>
+    
+  <span class="nx">it</span> <span class="s2">&quot;can iterate through its own properties and define non-iterable properties&quot;</span><span class="p">,</span> <span class="o">-&gt;</span>
+    <span class="nv">A = </span><span class="nx">Proto</span><span class="p">.</span><span class="nx">template</span><span class="p">().</span><span class="nx">include</span>
+      <span class="nv">a: </span><span class="s1">&#39;a&#39;</span>
+      <span class="nv">b: </span><span class="s1">&#39;b&#39;</span>
+      <span class="nv">c: </span><span class="s1">&#39;c&#39;</span>
+    <span class="nx">A</span><span class="p">.</span><span class="nx">dontIterate</span><span class="p">.</span><span class="nx">push</span> <span class="s2">&quot;a&quot;</span>
+    <span class="nv">t = </span><span class="p">{}</span>
+    <span class="nx">A</span><span class="p">.</span><span class="nx">each</span> <span class="nf">(name) -&gt;</span>
+      <span class="nx">t</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">b</span><span class="p">).</span><span class="nx">toEqual</span> <span class="kc">true</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">a</span><span class="p">).</span><span class="nx">toEqual</span> <span class="kc">undefined</span>
+    
+  <span class="nx">it</span> <span class="s2">&quot;can list its methods&quot;</span><span class="p">,</span> <span class="o">-&gt;</span>
+    <span class="nv">m = </span><span class="nx">Proto</span><span class="p">.</span><span class="nx">create</span><span class="p">().</span><span class="nx">include</span><span class="p">(</span><span class="nv">a: </span><span class="o">-&gt;</span> <span class="s1">&#39;a&#39;</span><span class="p">).</span><span class="nx">methods</span><span class="p">()</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="k">if</span> <span class="s2">&quot;bind&quot;</span> <span class="k">in</span> <span class="nx">m</span> <span class="k">then</span> <span class="kc">true</span><span class="p">).</span><span class="nx">toEqual</span> <span class="kc">true</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="k">if</span> <span class="s1">&#39;a&#39;</span> <span class="k">in</span> <span class="nx">m</span> <span class="k">then</span> <span class="kc">true</span><span class="p">).</span><span class="nx">toEqual</span> <span class="kc">true</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="k">if</span> <span class="s1">&#39;bogus&#39;</span> <span class="k">in</span> <span class="nx">m</span> <span class="k">then</span> <span class="kc">true</span><span class="p">).</span><span class="nx">toEqual</span> <span class="kc">undefined</span>
+    
+  <span class="nx">it</span> <span class="s2">&quot;can determine what objects it uses, even if they were mixed in&quot;</span><span class="p">,</span> <span class="o">-&gt;</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">ex</span><span class="p">.</span><span class="nx">SRange</span><span class="p">.</span><span class="nx">uses</span> <span class="nx">Proto</span><span class="p">).</span><span class="nx">toEqual</span> <span class="kc">true</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">ex</span><span class="p">.</span><span class="nx">SRange</span><span class="p">.</span><span class="nx">uses</span> <span class="nx">ex</span><span class="p">.</span><span class="nx">SArray</span><span class="p">).</span><span class="nx">toEqual</span> <span class="kc">true</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">ex</span><span class="p">.</span><span class="nx">SRange</span><span class="p">.</span><span class="nx">uses</span> <span class="nx">global</span><span class="p">).</span><span class="nx">toEqual</span> <span class="kc">false</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
