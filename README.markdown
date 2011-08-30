@@ -72,7 +72,8 @@ and any template can be used like a normal object.
   jimmothy.talk();          // => "I am jimmothy, the son of james."
 ```
 
-See the [docs](http://benekastah.github.com/proto.js/) for more details on the API.
+See the [docs](http://benekastah.github.com/proto.js/) for more details on the API. There are some more example
+there, as well.
 
 ##How to hack on proto.js
 
