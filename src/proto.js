@@ -1,40 +1,39 @@
 (function() {
-  var DONE, Proto, bind, create, createClass, g, initializeAll, isFn, noInit;
-  var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty, __indexOf = Array.prototype.indexOf || function(item) {
+  var BREAK, DONE, Proto, bind, create, g, hasProp, initializeAll, isFn, noInit;
+  var __slice = Array.prototype.slice, __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
     }
     return -1;
+  }, __hasProp = Object.prototype.hasOwnProperty;
+  g = typeof global !== "undefined" && global !== null ? global : window;
+  noInit = {
+    noInit: true
   };
-  try {
-    g = global;
-    if (!(g != null)) {
-      throw "";
-    }
-  } catch (e) {
-    g = window;
-  }
+  BREAK = {
+    break_loop: true
+  };
+  DONE = {
+    finished_initializing: true
+  };
   isFn = function(fn) {
     return typeof fn === "function";
   };
-  createClass = function(p) {
-    var O;
-    O = function() {};
-    O.prototype = p;
-    return new O;
-  };
+  hasProp = Object.prototype.hasOwnProperty;
   create = (function() {
     if (Object.create) {
       return function(p) {
         return Object.create(p);
       };
     } else {
-      return createClass;
+      return function(p) {
+        var O;
+        O = function() {};
+        O.prototype = p;
+        return new O;
+      };
     }
   })();
-  DONE = {
-    finished_initializing: true
-  };
   initializeAll = function() {
     var args, p, t, tmp, _ref;
     p = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
@@ -84,11 +83,9 @@
       };
     }
   })();
-  noInit = {
-    noInit: true
-  };
   Proto = {
     dontProvide: ["template"],
+    dontIterate: ["base", "self", "BREAK"],
     bind: function(fn) {
       return bind(fn, this);
     },
@@ -101,9 +98,13 @@
       _ref = this.dontProvide || [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         item = _ref[_i];
-        if (p.hasOwnProperty(item)) {
-          delete p[item];
+        if (hasProp.call(p, item)) {
+          continue;
         }
+        if (__indexOf.call(p.dontIterate, item) < 0) {
+          p.dontIterate.push(item);
+        }
+        p[item] = void 0;
       }
       if (init !== noInit && isFn(p.initialize)) {
         initializeAll.apply(null, [p].concat(__slice.call(arguments)));
@@ -141,6 +142,56 @@
       }
       return this;
     },
+    each: function() {
+      var callback, iterateAll, prop, result, ret, tmp, value, _ref;
+      callback = arguments[arguments.length - 1];
+      if (arguments.length > 1) {
+        iterateAll = arguments[0];
+      }
+      _ref = [this.BREAK, BREAK], tmp = _ref[0], this.BREAK = _ref[1];
+      ret = (function() {
+        var _results;
+        _results = [];
+        for (prop in this) {
+          value = this[prop];
+          if (!iterateAll && !hasProp.call(this, prop)) {
+            continue;
+          }
+          if (__indexOf.call(this.dontIterate || [], prop) < 0) {
+            result = callback.call(this, prop, value);
+            if (result === BREAK) {
+              break;
+            }
+            result;
+          }
+        }
+        return _results;
+      }).call(this);
+      if (tmp === void 0) {
+        delete this.BREAK;
+      } else {
+        this.BREAK = tmp;
+      }
+      return ret;
+    },
+    methods: function(getAll) {
+      var name, value, _results;
+      if (getAll == null) {
+        getAll = true;
+      }
+      _results = [];
+      for (name in this) {
+        value = this[name];
+        if (!getAll && !hasProp.call(this, name)) {
+          continue;
+        }
+        if (!isFn(value)) {
+          continue;
+        }
+        _results.push(name);
+      }
+      return _results;
+    },
     uses: function(obj) {
       var ret, _ref;
       if (this === obj || this.self === obj || this.base === obj || ((_ref = this.base) != null ? _ref.self : void 0) === obj) {
@@ -154,9 +205,9 @@
     }
   };
   Proto.self = Proto;
-  try {
+  if ((typeof process !== "undefined" && process !== null ? process.title : void 0) === "node") {
     module.exports = Proto;
-  } catch (e) {
+  } else {
     this.Proto = Proto;
   }
 }).call(this);
