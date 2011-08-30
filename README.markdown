@@ -1,4 +1,4 @@
-#proto.js
+#[proto.js](http://benekastah.github.com/proto.js/)
 
 A fully prototypal inheritance system. This means no more calling pseudo-class functions with `new` (at least
 if you don't want to). It's wonderfully simple and oh-so-javascripty!
@@ -70,7 +70,7 @@ and any template can be used like a normal object.
   jimmothy.talk();          // => "I am jimmothy, the son of james."
 ```
 
-See the docs for more details on the API.
+See the [docs](http://benekastah.github.com/proto.js/) for more details on the API.
 
 ##How to hack on proto.js
 
