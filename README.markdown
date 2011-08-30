@@ -86,7 +86,7 @@ there, as well.
   2. Generate documentation with [docco](http://jashkenas.github.com/docco/)
   
      ```
-     $ docco *.coffee
+     $ docco ./**/*.coffee
      ```
 
 As time goes on, I'll do some build automation for automatic tests and documentation generation when committing.
