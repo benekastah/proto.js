@@ -128,7 +128,7 @@
         item.apply(this, configs);
       } else {
         safe = arguments[1];
-        safe = !(safe != null) ? true : safe;
+        safe = !(safe != null) ? false : safe;
         dontProvide = item.dontProvide || [];
         for (name in item) {
           if (!__hasProp.call(item, name)) continue;

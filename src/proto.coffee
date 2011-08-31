@@ -136,12 +136,16 @@ Proto =
   # **Note**: if the 
   # `item` in the first argument is a function, then anything you pass in after that will be given to your function
   # as arguments, allowing for more advanced configurations.
+  #
+  # if the `item` is an object, then you can optionally pass in a second parameter (boolean) telling whether
+  # or not this should operate in _safe mode_. _Safe mode_ means that only properties that don't yet exist directly
+  # on the object will be populated. Defaults to `false`.
   include: (item, configs...) ->
     if isFn item
       item.apply this, configs
     else
       safe = arguments[1]
-      safe = if not safe? then true else safe
+      safe = if not safe? then false else safe
       dontProvide = item.dontProvide or []
       for own name, value of item
         unless name in dontProvide
