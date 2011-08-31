@@ -31,7 +31,7 @@ var Whale = Proto.template(Mammal).include(function () {
   this.dive = function () {
     return "The " + this.type + " dives deep into the ocean.";
   };
-})
+});
 ```
 
 Make objects based off the templates
