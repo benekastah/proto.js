@@ -88,6 +88,9 @@ there, as well.
      ```
      $ docco ./**/*.coffee
      ```
+     
+  3. Alternately, run `rake build` to do both these tasks in one go. Check out the [Rakefile](https://github.com/benekastah/proto.js/blob/master/Rakefile)
+  to see more tasks.
 
 As time goes on, I'll do some build automation for automatic tests and documentation generation when committing.
 For now, this should be ok. It's not a huge project.
