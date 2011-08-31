@@ -95,12 +95,16 @@ modified on <code>this</code> in the body of that function will be affected appr
 
 <p><strong>Note</strong>: if the 
 <code>item</code> in the first argument is a function, then anything you pass in after that will be given to your function
-as arguments, allowing for more advanced configurations.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">include: </span><span class="nf">(item, configs...) -&gt;</span>
+as arguments, allowing for more advanced configurations.</p>
+
+<p>if the <code>item</code> is an object, then you can optionally pass in a second parameter (boolean) telling whether
+or not this should operate in <em>safe mode</em>. <em>Safe mode</em> means that only properties that don't yet exist directly
+on the object will be populated. Defaults to <code>false</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">include: </span><span class="nf">(item, configs...) -&gt;</span>
     <span class="k">if</span> <span class="nx">isFn</span> <span class="nx">item</span>
       <span class="nx">item</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="nx">configs</span>
     <span class="k">else</span>
       <span class="nv">safe = </span><span class="nx">arguments</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-      <span class="nv">safe = </span><span class="k">if</span> <span class="o">not</span> <span class="nx">safe</span><span class="o">?</span> <span class="k">then</span> <span class="kc">true</span> <span class="k">else</span> <span class="nx">safe</span>
+      <span class="nv">safe = </span><span class="k">if</span> <span class="o">not</span> <span class="nx">safe</span><span class="o">?</span> <span class="k">then</span> <span class="kc">false</span> <span class="k">else</span> <span class="nx">safe</span>
       <span class="nv">dontProvide = </span><span class="nx">item</span><span class="p">.</span><span class="nx">dontProvide</span> <span class="o">or</span> <span class="p">[]</span>
       <span class="k">for</span> <span class="nx">own</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">value</span> <span class="k">of</span> <span class="nx">item</span>
         <span class="nx">unless</span> <span class="nx">name</span> <span class="k">in</span> <span class="nx">dontProvide</span>
