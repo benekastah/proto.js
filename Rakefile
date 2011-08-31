@@ -9,6 +9,7 @@ task :build, [:gh_pages] do |t, args|
   if args.gh_pages
     puts "Moving documentation files to physical location of gh-pages repository..."
     puts `cp docs/* #{args.gh_pages}`
+    puts "Moved.\n"
   end
 end
 

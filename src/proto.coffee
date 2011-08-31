@@ -7,7 +7,6 @@
 # So enjoy a break from the confusion that is javascript inheritance and embrace the true nature of its design!
 
 
-# A little environment detection...
 g = if global? then global else window
 
 # Used internally to ensure objects created through `Proto.template` won't be initialized right away.
